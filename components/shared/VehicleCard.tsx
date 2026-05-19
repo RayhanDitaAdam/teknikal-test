@@ -9,9 +9,10 @@ const icons: Record<string, React.ReactNode> = {
   angkutan_barang: <Truck className="size-4" />,
 };
 
-export function VehicleCard({ vehicle, isBooked, onClick }: { vehicle: Vehicle; isBooked?: boolean; onClick: () => void }) {
+export function VehicleCard({ vehicle, isBooked, bookedCount = 0, onClick }: { vehicle: Vehicle; isBooked?: boolean; bookedCount?: number; onClick: () => void }) {
   const s = computeStatus(vehicle);
   const sisa = sisaKm(vehicle);
+  const tersedia = vehicle.jumlah - bookedCount;
   return (
     <button onClick={onClick} disabled={isBooked} className="text-left w-full">
       <Card className={`h-full transition-shadow ${isBooked ? "opacity-50 cursor-not-allowed" : "hover:shadow-md cursor-pointer"}`}>
@@ -26,13 +27,20 @@ export function VehicleCard({ vehicle, isBooked, onClick }: { vehicle: Vehicle; 
                 <p className="text-xs text-muted-foreground">{vehicle.plat}</p>
               </div>
             </div>
-            {isBooked ? (
-              <Badge variant="secondary" className="text-[10px]">Dipinjam</Badge>
-            ) : (
-              <Badge variant="outline" className={`text-[10px] ${statusBadge(s)}`}>
-                {statusLabel[s] || s}
-              </Badge>
-            )}
+            <div className="flex flex-col items-end gap-1">
+              {isBooked ? (
+                <Badge variant="secondary" className="text-[10px]">Penuh</Badge>
+              ) : (
+                <Badge variant="outline" className={`text-[10px] ${statusBadge(s)}`}>
+                  {statusLabel[s] || s}
+                </Badge>
+              )}
+              {vehicle.jumlah > 1 && (
+                <Badge variant="outline" className="text-[10px] text-muted-foreground">
+                  {bookedCount}/{vehicle.jumlah}
+                </Badge>
+              )}
+            </div>
           </div>
           <div className="space-y-1 text-xs">
             <div className="flex justify-between">
@@ -56,6 +64,12 @@ export function VehicleCard({ vehicle, isBooked, onClick }: { vehicle: Vehicle; 
             <div className="flex justify-between">
               <span className="text-muted-foreground">Kepemilikan</span>
               <span className="font-medium capitalize">{vehicle.kepemilikan}</span>
+            </div>
+            <div className="flex justify-between border-t border-border pt-1 mt-1">
+              <span className="text-muted-foreground">Unit tersedia</span>
+              <span className={`font-medium ${tersedia <= 0 ? "text-red-600" : tersedia <= 1 && vehicle.jumlah > 1 ? "text-yellow-600" : "text-green-600"}`}>
+                {tersedia > 0 ? `${tersedia}/${vehicle.jumlah}` : "Habis"}
+              </span>
             </div>
           </div>
           {needOilChange(vehicle) && !isBooked && (
