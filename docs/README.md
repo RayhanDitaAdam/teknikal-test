@@ -52,6 +52,8 @@ flowchart TD
 
     style A fill:#e2e8f0,stroke:#475569
     style B fill:#dbeafe,stroke:#3b82f6
+    style V fill:#fef3c7,stroke:#f59e0b
+    style X fill:#f1f5f9,stroke:#94a3b8
     style C fill:#fef3c7,stroke:#f59e0b
     style D fill:#dbeafe,stroke:#3b82f6
     style E fill:#fee2e2,stroke:#ef4444
@@ -70,11 +72,11 @@ erDiagram
     User ||--o{ Pemesanan : "pemohon"
     User ||--o{ Pemesanan : "approver1"
     User ||--o{ Pemesanan : "approver2"
-    User ||--o{ Pemesanan : "driver"
-    User ||--o{ LogAktivitas : "membuat"
-    Vehicle ||--o{ Pemesanan : "dipesan"
-    Vehicle ||--o{ VehicleServiceLog : "riwayat"
-    Pemesanan ||--o{ LogAktivitas : "terkait"
+    User |o--o{ Pemesanan : "driver"
+    User ||--o{ LogAktivitas : "mencatat"
+    Vehicle |o--o{ Pemesanan : "dipakai"
+    Vehicle ||--o{ VehicleServiceLog : "riwayat service"
+    Pemesanan |o--o{ LogAktivitas : "log"
 
     User {
         string id PK
@@ -96,11 +98,11 @@ erDiagram
         float kmPerLiter
         int serviceIntervalKm
         int oilChangeIntervalKm
-        int lastServiceKm
-        int lastOilChangeKm
-        datetime lastService
-        datetime lastOilChange
-        datetime lastFuelRefill
+        int lastServiceKm "nullable"
+        int lastOilChangeKm "nullable"
+        datetime lastService "nullable"
+        datetime lastOilChange "nullable"
+        datetime lastFuelRefill "nullable"
         datetime createdAt
         datetime updatedAt
     }
@@ -111,16 +113,16 @@ erDiagram
         string tipe "service | oil_change | fuel | other"
         datetime tanggal
         int kilometer
-        string deskripsi
-        float biaya
+        string deskripsi "nullable"
+        float biaya "nullable"
         datetime createdAt
     }
 
     Pemesanan {
         string id PK
         string pemohonId FK
-        string driverId FK
-        string vehicleId FK
+        string driverId FK "nullable"
+        string vehicleId FK "nullable"
         string approver1Id FK
         string approver2Id FK
         string namaPemesan
@@ -128,13 +130,13 @@ erDiagram
         datetime tanggalMulai
         datetime tanggalSelesai
         string tujuan
-        float jarakKm
+        float jarakKm "nullable"
         int jumlahPenumpang
-        string keterangan
+        string keterangan "nullable"
         string status "pending_level_1 | pending_level_2 | approved | rejected"
-        string catatanApprover1
-        string catatanApprover2
-        datetime approvedAt
+        string catatanApprover1 "nullable"
+        string catatanApprover2 "nullable"
+        datetime approvedAt "nullable"
         datetime createdAt
         datetime updatedAt
     }
@@ -142,7 +144,7 @@ erDiagram
     LogAktivitas {
         string id PK
         string userId FK
-        string pemesananId FK
+        string pemesananId FK "nullable"
         string aksi "LOGIN | CREATE_PEMESANAN | APPROVE_LEVEL_1 | APPROVE_LEVEL_2 | REJECT_LEVEL_1 | REJECT_LEVEL_2 | EXPORT_EXCEL"
         string detail
         datetime timestamp
