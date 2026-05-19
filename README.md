@@ -20,10 +20,10 @@ Aplikasi manajemen pemesanan kendaraan operasional dengan **approval 2 level** u
 ```bash
 git clone https://github.com/RayhanDitaAdam/teknikal-test.git
 cd teknikal-test
-pnpm install
-pnpm prisma migrate dev
-pnpm seed
-pnpm dev
+npm install
+npm prisma migrate dev
+npm seed
+npm run dev
 ```
 
 Buka **http://localhost:3000**.
