@@ -45,6 +45,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (body.plat !== undefined) updateData.plat = body.plat;
   if (body.tipe !== undefined) updateData.tipe = body.tipe;
   if (body.kepemilikan !== undefined) updateData.kepemilikan = body.kepemilikan;
+  if (body.jumlah !== undefined) updateData.jumlah = parseInt(body.jumlah);
 
   if (body.aksi === "service_done") {
     const newKm = vehicle.kilometer;

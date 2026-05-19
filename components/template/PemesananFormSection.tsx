@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { User, Vehicle, Pemesanan } from "@/lib/types";
-import { computeStatus, isVehicleBooked } from "@/lib/vehicle-utils";
+import { computeStatus, isVehicleFullyBooked, getAvailableCount } from "@/lib/vehicle-utils";
 
 export function PemesananFormSection({
   adminUsers, driverUsers, approverUsers, vehicles, pemesanans, currentUser, onSuccess,
@@ -100,36 +100,38 @@ export function PemesananFormSection({
                   <Select value={form.vehicleId} onValueChange={(v) => updateField("vehicleId", v)}>
                     <SelectTrigger><SelectValue>{vehicles.find((v) => v.id === form.vehicleId) ? `${vehicles.find((v) => v.id === form.vehicleId)!.nama} - ${vehicles.find((v) => v.id === form.vehicleId)!.plat}` : "Pilih Kendaraan"}</SelectValue></SelectTrigger>
                     <SelectContent>
-                      {vehicles.filter((v) => {
-                        if (computeStatus(v) === "danger") return false;
-                        if (isVehicleBooked(v.id, form.tanggalMulai, form.tanggalSelesai, pemesanans)) return false;
-                        return true;
-                      }).length === 0 ? (
-                        <div className="p-2 text-sm text-muted-foreground text-center">Semua kendaraan sedang dipesan</div>
-                      ) : (
-                        vehicles.filter((v) => {
+                      {(() => {
+                        const available = vehicles.filter((v) => {
                           if (computeStatus(v) === "danger") return false;
-                          if (isVehicleBooked(v.id, form.tanggalMulai, form.tanggalSelesai, pemesanans)) return false;
+                          if (isVehicleFullyBooked(v.id, form.tanggalMulai, form.tanggalSelesai, pemesanans, v.jumlah)) return false;
                           return true;
-                        }).map((v) => (
-                          <SelectItem key={v.id} value={v.id}>
-                            {v.nama} - {v.plat} ({v.kilometer} km) {computeStatus(v) === "service" ? "⚠" : ""}
-                          </SelectItem>
-                        ))
-                      )}
+                        });
+                        if (available.length === 0) {
+                          return <div className="p-2 text-sm text-muted-foreground text-center">Semua kendaraan sedang dipesan penuh</div>;
+                        }
+                        return available.map((v) => {
+                          const sisa = getAvailableCount(v.id, form.tanggalMulai, form.tanggalSelesai, pemesanans, v.jumlah);
+                          return (
+                            <SelectItem key={v.id} value={v.id}>
+                              {v.nama} - {v.plat} ({sisa}/{v.jumlah} tersedia) {computeStatus(v) === "service" ? "⚠" : ""}
+                            </SelectItem>
+                          );
+                        });
+                      })()}
                     </SelectContent>
                   </Select>
                   {(() => {
-                    const available = vehicles.filter((v) => {
+                    const totalAvailable = vehicles.filter((v) => {
                       if (computeStatus(v) === "danger") return false;
-                      if (isVehicleBooked(v.id, form.tanggalMulai, form.tanggalSelesai, pemesanans)) return false;
-                      return true;
-                    });
-                    const totalBooked = vehicles.filter((v) => computeStatus(v) !== "danger" && isVehicleBooked(v.id, form.tanggalMulai, form.tanggalSelesai, pemesanans)).length;
+                      return !isVehicleFullyBooked(v.id, form.tanggalMulai, form.tanggalSelesai, pemesanans, v.jumlah);
+                    }).length;
+                    const totalFullyBooked = vehicles.filter((v) => {
+                      return computeStatus(v) !== "danger" && isVehicleFullyBooked(v.id, form.tanggalMulai, form.tanggalSelesai, pemesanans, v.jumlah);
+                    }).length;
                     return (
                       <p className="text-xs text-muted-foreground">
-                        {available.length} tersedia
-                        {totalBooked > 0 && ` · ${totalBooked} sedang dipesan`}
+                        {totalAvailable} kendaraan tersedia
+                        {totalFullyBooked > 0 && ` · ${totalFullyBooked} penuh`}
                       </p>
                     );
                   })()}

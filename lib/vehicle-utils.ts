@@ -46,36 +46,68 @@ export const statusColor = (s: string) => {
   }
 };
 
-export function isVehicleBooked(
+function countBookedUnits(
   vehicleId: string,
   tanggalMulai: string,
   tanggalSelesai: string,
   pemesanans: Pemesanan[]
-): boolean {
+): number {
   const start = new Date(tanggalMulai);
   const end = new Date(tanggalSelesai);
-  return pemesanans.some((p) => {
+  return pemesanans.filter((p) => {
     if (p.vehicle?.id !== vehicleId) return false;
     if (p.status === "rejected") return false;
     const pStart = new Date(p.tanggalMulai);
     const pEnd = new Date(p.tanggalSelesai);
     return start <= pEnd && end >= pStart;
-  });
+  }).length;
 }
 
-export function getVehiclesBookedToday(pemesanans: Pemesanan[]): Set<string> {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const endOfToday = new Date(today);
-  endOfToday.setHours(23, 59, 59, 999);
-  const booked = new Set<string>();
+export function isVehicleFullyBooked(
+  vehicleId: string,
+  tanggalMulai: string,
+  tanggalSelesai: string,
+  pemesanans: Pemesanan[],
+  jumlah: number
+): boolean {
+  return countBookedUnits(vehicleId, tanggalMulai, tanggalSelesai, pemesanans) >= jumlah;
+}
+
+export function getAvailableCount(
+  vehicleId: string,
+  tanggalMulai: string,
+  tanggalSelesai: string,
+  pemesanans: Pemesanan[],
+  jumlah: number
+): number {
+  return jumlah - countBookedUnits(vehicleId, tanggalMulai, tanggalSelesai, pemesanans);
+}
+
+export function getBookedCountsByDate(
+  pemesanans: Pemesanan[],
+  tanggalMulai: string,
+  tanggalSelesai: string
+): Map<string, number> {
+  const start = new Date(tanggalMulai);
+  const end = new Date(tanggalSelesai);
+  const counts = new Map<string, number>();
   for (const p of pemesanans) {
     if (p.status === "rejected" || !p.vehicle) continue;
     const pStart = new Date(p.tanggalMulai);
     const pEnd = new Date(p.tanggalSelesai);
-    if (today <= pEnd && endOfToday >= pStart) {
-      booked.add(p.vehicle.id);
+    if (start <= pEnd && end >= pStart) {
+      counts.set(p.vehicle.id, (counts.get(p.vehicle.id) || 0) + 1);
     }
   }
-  return booked;
+  return counts;
+}
+
+export function isVehicleUnavailable(
+  vehicleId: string,
+  tanggalMulai: string,
+  tanggalSelesai: string,
+  pemesanans: Pemesanan[],
+  jumlah: number
+): boolean {
+  return isVehicleFullyBooked(vehicleId, tanggalMulai, tanggalSelesai, pemesanans, jumlah);
 }

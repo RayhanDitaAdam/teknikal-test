@@ -20,6 +20,7 @@ export type Vehicle = {
   plat: string;
   tipe: string;
   kepemilikan: string;
+  jumlah: number;
   status: string;
   kilometer: number;
   kmPerLiter: number;

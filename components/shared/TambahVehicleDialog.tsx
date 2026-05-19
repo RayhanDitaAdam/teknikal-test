@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const defaultForm = { nama: "", plat: "", tipe: "angkutan_orang", kepemilikan: "milik", kilometer: "0", kmPerLiter: "10", serviceIntervalKm: "10000", oilChangeIntervalKm: "5000" };
+const defaultForm = { nama: "", plat: "", tipe: "angkutan_orang", kepemilikan: "milik", jumlah: "1", kilometer: "0", kmPerLiter: "10", serviceIntervalKm: "10000", oilChangeIntervalKm: "5000" };
 
 export function TambahVehicleDialog({ open, onOpenChange, onSuccess }: { open: boolean; onOpenChange: (o: boolean) => void; onSuccess: () => void }) {
   const [form, setForm] = useState(defaultForm);
@@ -50,9 +50,10 @@ export function TambahVehicleDialog({ open, onOpenChange, onSuccess }: { open: b
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1"><Label className="text-xs">KM Awal</Label><Input type="number" value={form.kilometer} onChange={(e) => setForm({ ...form, kilometer: e.target.value })} /></div>
             <div className="space-y-1"><Label className="text-xs">Bensin (km/L)</Label><Input type="number" step="0.1" value={form.kmPerLiter} onChange={(e) => setForm({ ...form, kmPerLiter: e.target.value })} /></div>
+            <div className="space-y-1"><Label className="text-xs">Jumlah Unit</Label><Input type="number" min="1" value={form.jumlah} onChange={(e) => setForm({ ...form, jumlah: e.target.value })} /></div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1"><Label className="text-xs">Service setiap (km)</Label><Input type="number" value={form.serviceIntervalKm} onChange={(e) => setForm({ ...form, serviceIntervalKm: e.target.value })} /></div>

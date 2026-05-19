@@ -28,7 +28,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { nama, plat, tipe, kepemilikan, kilometer, kmPerLiter, serviceIntervalKm, oilChangeIntervalKm, lastServiceKm, lastOilChangeKm } = body;
+  const { nama, plat, tipe, kepemilikan, jumlah, kilometer, kmPerLiter, serviceIntervalKm, oilChangeIntervalKm, lastServiceKm, lastOilChangeKm } = body;
 
   if (!nama || !plat) {
     return NextResponse.json({ error: "Nama dan plat wajib diisi" }, { status: 400 });
@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
     plat,
     tipe: tipe || "angkutan_orang",
     kepemilikan: kepemilikan || "milik",
+    jumlah: parseInt(jumlah || "1"),
     kilometer: parseInt(kilometer || "0"),
     kmPerLiter: parseFloat(kmPerLiter || "10"),
     serviceIntervalKm: parseInt(serviceIntervalKm || "10000"),

@@ -44,7 +44,7 @@ async function main() {
 
   const v1 = await prisma.vehicle.create({
     data: {
-      nama: "Toyota Avanza", plat: "B 1234 CD", tipe: "angkutan_orang", kepemilikan: "milik",
+      nama: "Toyota Avanza", plat: "B 1234 CD", tipe: "angkutan_orang", kepemilikan: "milik", jumlah: 2,
       kilometer: 45230, status: "aman", kmPerLiter: 12, serviceIntervalKm: 10000, oilChangeIntervalKm: 5000,
       lastServiceKm: 44000, lastOilChangeKm: 44000,
       lastService: new Date("2026-04-15"), lastOilChange: new Date("2026-04-15"), lastFuelRefill: new Date("2026-05-18"),
@@ -53,7 +53,7 @@ async function main() {
 
   const v2 = await prisma.vehicle.create({
     data: {
-      nama: "Honda CRV", plat: "B 5678 EF", tipe: "angkutan_orang", kepemilikan: "milik",
+      nama: "Honda CRV", plat: "B 5678 EF", tipe: "angkutan_orang", kepemilikan: "milik", jumlah: 1,
       kilometer: 28300, status: "service", kmPerLiter: 10, serviceIntervalKm: 10000, oilChangeIntervalKm: 5000,
       lastServiceKm: 20000, lastOilChangeKm: 25000,
       lastService: new Date("2026-05-01"), lastOilChange: new Date("2026-05-01"), lastFuelRefill: new Date("2026-05-19"),
@@ -62,7 +62,7 @@ async function main() {
 
   const v3 = await prisma.vehicle.create({
     data: {
-      nama: "Suzuki Ertiga", plat: "B 9012 GH", tipe: "angkutan_orang", kepemilikan: "sewa",
+      nama: "Suzuki Ertiga", plat: "B 9012 GH", tipe: "angkutan_orang", kepemilikan: "sewa", jumlah: 3,
       kilometer: 18900, status: "aman", kmPerLiter: 11, serviceIntervalKm: 10000, oilChangeIntervalKm: 5000,
       lastServiceKm: 18500, lastOilChangeKm: 18000,
       lastService: new Date("2026-05-10"), lastOilChange: new Date("2026-04-20"), lastFuelRefill: new Date("2026-05-17"),
@@ -71,7 +71,7 @@ async function main() {
 
   const v4 = await prisma.vehicle.create({
     data: {
-      nama: "Mitsubishi Pajero", plat: "B 3456 IJ", tipe: "angkutan_barang", kepemilikan: "milik",
+      nama: "Mitsubishi Pajero", plat: "B 3456 IJ", tipe: "angkutan_barang", kepemilikan: "milik", jumlah: 1,
       kilometer: 67800, status: "danger", kmPerLiter: 8, serviceIntervalKm: 10000, oilChangeIntervalKm: 5000,
       lastServiceKm: 60000, lastOilChangeKm: 60000,
       lastService: new Date("2026-03-20"), lastOilChange: new Date("2026-03-20"), lastFuelRefill: new Date("2026-05-10"),
@@ -80,7 +80,7 @@ async function main() {
 
   const v5 = await prisma.vehicle.create({
     data: {
-      nama: "Isuzu Elf", plat: "B 7890 KL", tipe: "angkutan_barang", kepemilikan: "milik",
+      nama: "Isuzu Elf", plat: "B 7890 KL", tipe: "angkutan_barang", kepemilikan: "milik", jumlah: 1,
       kilometer: 89200, status: "service", kmPerLiter: 9, serviceIntervalKm: 10000, oilChangeIntervalKm: 5000,
       lastServiceKm: 81000, lastOilChangeKm: 81000,
       lastService: new Date("2026-04-28"), lastOilChange: new Date("2026-02-15"), lastFuelRefill: new Date("2026-05-15"),

@@ -28,6 +28,7 @@ model Vehicle {
   plat      String   @unique
   tipe      String   @default("angkutan_orang")
   kepemilikan String @default("milik")
+  jumlah    Int      @default(1)
   status    String   @default("aman")
   kilometer Int      @default(0)
 
