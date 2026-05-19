@@ -1,5 +1,7 @@
 # 📖 Dokumentasi Sistem Pemesanan Kendaraan
 
+> 📘 **Panduan penggunaan lengkap dari 0 ke 100%** → [`PENGGUNAAN.md`](./PENGGUNAAN.md)
+
 - [Panduan Penggunaan per Role](#-panduan-penggunaan-per-role)
 - [Activity Diagram](#-activity-diagram)
 - [Physical Data Model](#-physical-data-model)

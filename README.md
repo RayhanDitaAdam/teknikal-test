@@ -49,4 +49,5 @@ Admin Input → Approver 1 Setuju → Approver 2 Setuju → ✅ Selesai
 
 ---
 
-📖 Dokumentasi lengkap → [`docs/`](./docs)
+📘 Panduan penggunaan lengkap → [`docs/PENGGUNAAN.md`](./docs/PENGGUNAAN.md)  
+📖 Dokumentasi teknis → [`docs/`](./docs)
