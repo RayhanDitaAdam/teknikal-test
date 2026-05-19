@@ -15,9 +15,11 @@ Aplikasi manajemen pemesanan kendaraan operasional dengan **approval 2 level** u
 | **Grafik** | Recharts |
 | **Export** | SheetJS (xlsx) |
 
-## 🚀 Cara Menjalankan
+## 🚀 Cara Menjalankan (Manual)
 
 ```bash
+git clone https://github.com/RayhanDitaAdam/teknikal-test.git
+cd teknikal-test
 pnpm install
 pnpm prisma migrate dev
 pnpm seed
@@ -25,6 +27,27 @@ pnpm dev
 ```
 
 Buka **http://localhost:3000**.
+
+## 🐳 Docker (Opsi Termudah)
+
+```bash
+git clone https://github.com/RayhanDitaAdam/teknikal-test.git
+cd teknikal-test
+docker compose up -d
+```
+
+Buka **http://localhost:3000**.
+
+> Data sudah langsung terisi seed. Container siap dalam ~30 detik (tergantung koneksi).
+
+### Perintah Docker Lainnya
+
+| Perintah | Fungsi |
+|----------|--------|
+| `docker compose up -d` | Jalankan di background |
+| `docker compose down` | Hentikan container |
+| `docker compose logs -f` | Lihat log real-time |
+| `docker compose restart` | Restart container |
 
 ## 🔄 Flow Approval
 
