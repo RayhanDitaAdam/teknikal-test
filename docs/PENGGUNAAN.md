@@ -103,11 +103,19 @@ Saat memilih kendaraan, sistem akan menampilkan info tambahan:
 - Peringatan jika kendaraan dalam status `service` (tidak disarankan perjalanan >100km)
 - Kendaraan status `danger` tidak bisa dipilih
 
-### 3.4 Validasi Approver
+### 3.4 Fitur Ketersediaan Unit
+
+Sistem otomatis memfilter kendaraan berdasarkan **unit yang tersedia** di tanggal yang dipilih:
+- Cek berapa banyak pemesanan yang sudah disetujui pada rentang tanggal tersebut
+- Jika semua unit sudah dipesan penuh di tanggal itu, kartu kendaraan menjadi **disabled (abu-abu)**
+- Label "Penuh" akan muncul di kartu kendaraan yang tidak tersedia
+- Contoh: Jika Suzuki Ertiga punya 3 unit dan sudah ada 3 pemesanan yang disetujui di tanggal yang sama, kartu akan disabled
+
+### 3.5 Validasi Approver
 
 Approver 1 dan Approver 2 tidak boleh dipilih sama — sistem akan otomatis mengosongkan field jika user yang sama dipilih.
 
-### 3.5 Submit
+### 3.6 Submit
 
 Setelah submit berhasil:
 - Status pemesanan: **Pending Level 1**
@@ -159,6 +167,7 @@ Menu untuk mengelola data kendaraan operasional.
 ### 5.1 Melihat Kendaraan
 Semua kendaraan ditampilkan dalam bentuk **card grid** dengan informasi:
 - Nama dan plat nomor
+- **Jumlah unit** yang tersedia
 - Status (`Aman` / `Perlu Service` / `Bahaya`)
 - Kilometer saat ini
 - Jarak service (setiap berapa km)
@@ -166,6 +175,8 @@ Semua kendaraan ditampilkan dalam bentuk **card grid** dengan informasi:
 - Konsumsi BBM (km/L)
 - Kepemilikan (Milik / Sewa)
 - Peringatan ganti oli (jika sudah waktunya)
+
+Setiap kartu kendaraan memiliki ikon **pensil ✏️** di pojok untuk mengedit data kendaraan (nama, plat, tipe, kepemilikan, km, jumlah unit, dll).
 
 ### 5.2 Filter & Cari
 - **Search bar**: Cari berdasarkan nama kendaraan atau plat nomor
@@ -178,11 +189,14 @@ Semua kendaraan ditampilkan dalam bentuk **card grid** dengan informasi:
    - Plat nomor
    - Tipe (Angkutan Orang / Angkutan Barang)
    - Kepemilikan (Milik Perusahaan / Sewa)
+   - **Jumlah Unit** (berapa unit kendaraan ini tersedia)
    - KM Awal
    - Bensin (km/L)
    - Service setiap (km)
    - Ganti Oli setiap (km)
 3. Klik **Simpan**
+
+> **Edit kendaraan:** Klik ikon pensil ✏️ di pojok kanan atas card kendaraan untuk mengedit data termasuk jumlah unit.
 
 ### 5.4 Detail & Riwayat Service
 Klik pada card kendaraan untuk melihat detail:

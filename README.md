@@ -47,6 +47,18 @@ Admin Input → Approver 1 Setuju → Approver 2 Setuju → ✅ Selesai
 
 > Login tanpa password — cukup pilih user dari dialog.
 
+### Kendaraan Seed
+
+| Kendaraan | Plat | Unit | Status |
+|-----------|------|------|--------|
+| Toyota Avanza | B 1234 CD | 2 unit | Aman |
+| Honda CRV | B 5678 EF | 1 unit | Perlu Service |
+| Suzuki Ertiga | B 9012 GH | 3 unit | Aman |
+| Mitsubishi Pajero | B 3456 IJ | 1 unit | Bahaya |
+| Isuzu Elf | B 7890 KL | 1 unit | Perlu Service |
+
+> Setiap kendaraan punya **jumlah unit** — ketersediaan dicek otomatis saat pemesanan berdasarkan tanggal.
+
 ---
 
 📘 Panduan penggunaan lengkap → [`docs/PENGGUNAAN.md`](./docs/PENGGUNAAN.md)  

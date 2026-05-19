@@ -38,7 +38,9 @@
 ```mermaid
 flowchart TD
     A([Mulai]) --> B[Admin input pemesanan]
-    B --> C{Approver 1 setuju?}
+    B --> V{Unit tersedia\ndi tanggal itu?}
+    V -->|Ya| C{Approver 1 setuju?}
+    V -->|Tidak| X[Pilih kendaraan lain]
     C -->|Ya| D[Status: Pending Level 2]
     C -->|Tidak| E[Status: Ditolak]
     D --> F{Approver 2 setuju?}
@@ -90,6 +92,7 @@ erDiagram
         string tipe "angkutan_orang | angkutan_barang"
         string kepemilikan "milik | sewa"
         int kilometer
+        int jumlah "jumlah unit (default 1)"
         float kmPerLiter
         int serviceIntervalKm
         int oilChangeIntervalKm
@@ -198,7 +201,7 @@ tes-teknikal/
 │   ├── ui/          # shadcn/ui
 │   ├── layout/      # AppLayout
 │   ├── template/    # Dashboard, Approval, Kendaraan, Log, PemesananForm
-│   └── shared/      # StatCard, VehicleCard, LoginDialog, dll
+│   └── shared/      # StatCard, VehicleCard, LoginDialog, EditVehicleDialog, dll
 ├── lib/
 │   ├── db.ts        # Prisma client
 │   ├── types.ts     # Type definitions
