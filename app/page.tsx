@@ -103,13 +103,14 @@ export default function Home() {
             driverUsers={driverUsers}
             approverUsers={approverUsers}
             vehicles={vehicles}
+            pemesanans={pemesanans}
             currentUser={currentUser}
             onSuccess={fetchData}
           />
         )}
 
         {activeTab === "kendaraan" && (
-          <KendaraanSection vehicles={vehicles} onRefresh={fetchData} />
+          <KendaraanSection vehicles={vehicles} pemesanans={pemesanans} onRefresh={fetchData} />
         )}
 
         {activeTab === "approval" && (

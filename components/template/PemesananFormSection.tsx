@@ -7,14 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Vehicle } from "@/lib/types";
-import { computeStatus } from "@/lib/vehicle-utils";
+import { User, Vehicle, Pemesanan } from "@/lib/types";
+import { computeStatus, isVehicleBooked } from "@/lib/vehicle-utils";
 
 export function PemesananFormSection({
-  adminUsers, driverUsers, approverUsers, vehicles, currentUser, onSuccess,
+  adminUsers, driverUsers, approverUsers, vehicles, pemesanans, currentUser, onSuccess,
 }: {
   adminUsers: User[]; driverUsers: User[]; approverUsers: User[]; vehicles: Vehicle[];
-  currentUser: User | null; onSuccess: () => void;
+  pemesanans: Pemesanan[]; currentUser: User | null; onSuccess: () => void;
 }) {
   const [form, setForm] = useState({
     pemohonId: currentUser?.id || "", driverId: "", vehicleId: "",
@@ -95,10 +95,48 @@ export function PemesananFormSection({
             </div>
             <div className="space-y-2">
               <Label htmlFor="vehicleId">Pilih Kendaraan</Label>
-              <Select value={form.vehicleId} onValueChange={(v) => updateField("vehicleId", v)}>
-                <SelectTrigger><SelectValue>{vehicles.find((v) => v.id === form.vehicleId) ? `${vehicles.find((v) => v.id === form.vehicleId)!.nama} - ${vehicles.find((v) => v.id === form.vehicleId)!.plat}` : "Pilih Kendaraan"}</SelectValue></SelectTrigger>
-                <SelectContent>{vehicles.filter((v) => computeStatus(v) !== "danger").map((v) => <SelectItem key={v.id} value={v.id}>{v.nama} - {v.plat} ({v.kilometer} km) {computeStatus(v) === "service" ? "⚠" : ""}</SelectItem>)}</SelectContent>
-              </Select>
+              {form.tanggalMulai && form.tanggalSelesai ? (
+                <>
+                  <Select value={form.vehicleId} onValueChange={(v) => updateField("vehicleId", v)}>
+                    <SelectTrigger><SelectValue>{vehicles.find((v) => v.id === form.vehicleId) ? `${vehicles.find((v) => v.id === form.vehicleId)!.nama} - ${vehicles.find((v) => v.id === form.vehicleId)!.plat}` : "Pilih Kendaraan"}</SelectValue></SelectTrigger>
+                    <SelectContent>
+                      {vehicles.filter((v) => {
+                        if (computeStatus(v) === "danger") return false;
+                        if (isVehicleBooked(v.id, form.tanggalMulai, form.tanggalSelesai, pemesanans)) return false;
+                        return true;
+                      }).length === 0 ? (
+                        <div className="p-2 text-sm text-muted-foreground text-center">Semua kendaraan sedang dipesan</div>
+                      ) : (
+                        vehicles.filter((v) => {
+                          if (computeStatus(v) === "danger") return false;
+                          if (isVehicleBooked(v.id, form.tanggalMulai, form.tanggalSelesai, pemesanans)) return false;
+                          return true;
+                        }).map((v) => (
+                          <SelectItem key={v.id} value={v.id}>
+                            {v.nama} - {v.plat} ({v.kilometer} km) {computeStatus(v) === "service" ? "⚠" : ""}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  {(() => {
+                    const available = vehicles.filter((v) => {
+                      if (computeStatus(v) === "danger") return false;
+                      if (isVehicleBooked(v.id, form.tanggalMulai, form.tanggalSelesai, pemesanans)) return false;
+                      return true;
+                    });
+                    const totalBooked = vehicles.filter((v) => computeStatus(v) !== "danger" && isVehicleBooked(v.id, form.tanggalMulai, form.tanggalSelesai, pemesanans)).length;
+                    return (
+                      <p className="text-xs text-muted-foreground">
+                        {available.length} tersedia
+                        {totalBooked > 0 && ` · ${totalBooked} sedang dipesan`}
+                      </p>
+                    );
+                  })()}
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground py-2">Pilih tanggal mulai & selesai terlebih dahulu</p>
+              )}
               {(() => {
                 const v = vehicles.find((x) => x.id === form.vehicleId);
                 if (!v) return null;

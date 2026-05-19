@@ -2,14 +2,16 @@ import { useState } from "react";
 import { Car } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Vehicle } from "@/lib/types";
-import { computeStatus } from "@/lib/vehicle-utils";
+import { Badge } from "@/components/ui/badge";
+import { Vehicle, Pemesanan } from "@/lib/types";
+import { computeStatus, getVehiclesBookedToday } from "@/lib/vehicle-utils";
 import { VehicleCard } from "@/components/shared/VehicleCard";
 import { TambahVehicleDialog } from "@/components/shared/TambahVehicleDialog";
 import { VehicleDetailDialog } from "@/components/shared/VehicleDetailDialog";
 import { ServiceModal } from "@/components/shared/ServiceModal";
 
-export function KendaraanSection({ vehicles, onRefresh }: { vehicles: Vehicle[]; onRefresh: () => void }) {
+export function KendaraanSection({ vehicles, pemesanans, onRefresh }: { vehicles: Vehicle[]; pemesanans: Pemesanan[]; onRefresh: () => void }) {
+  const bookedToday = getVehiclesBookedToday(pemesanans);
   const [detail, setDetail] = useState<Vehicle | null>(null);
   const [tambahOpen, setTambahOpen] = useState(false);
   const [vehicleSearch, setVehicleSearch] = useState("");
@@ -53,7 +55,7 @@ export function KendaraanSection({ vehicles, onRefresh }: { vehicles: Vehicle[];
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((v) => (
-          <VehicleCard key={v.id} vehicle={v} onClick={() => setDetail(v)} />
+          <VehicleCard key={v.id} vehicle={v} isBooked={bookedToday.has(v.id)} onClick={() => setDetail(v)} />
         ))}
       </div>
 

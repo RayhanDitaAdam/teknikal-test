@@ -9,16 +9,16 @@ const icons: Record<string, React.ReactNode> = {
   angkutan_barang: <Truck className="size-4" />,
 };
 
-export function VehicleCard({ vehicle, onClick }: { vehicle: Vehicle; onClick: () => void }) {
+export function VehicleCard({ vehicle, isBooked, onClick }: { vehicle: Vehicle; isBooked?: boolean; onClick: () => void }) {
   const s = computeStatus(vehicle);
   const sisa = sisaKm(vehicle);
   return (
-    <button onClick={onClick} className="text-left w-full">
-      <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+    <button onClick={onClick} disabled={isBooked} className="text-left w-full">
+      <Card className={`h-full transition-shadow ${isBooked ? "opacity-50 cursor-not-allowed" : "hover:shadow-md cursor-pointer"}`}>
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-2">
-              <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
+              <div className={`flex size-9 items-center justify-center rounded-lg ${isBooked ? "bg-muted" : "bg-primary/10"}`}>
                 {icons[vehicle.tipe] || <Car className="size-4" />}
               </div>
               <div>
@@ -26,9 +26,13 @@ export function VehicleCard({ vehicle, onClick }: { vehicle: Vehicle; onClick: (
                 <p className="text-xs text-muted-foreground">{vehicle.plat}</p>
               </div>
             </div>
-            <Badge variant="outline" className={`text-[10px] ${statusBadge(s)}`}>
-              {statusLabel[s] || s}
-            </Badge>
+            {isBooked ? (
+              <Badge variant="secondary" className="text-[10px]">Dipinjam</Badge>
+            ) : (
+              <Badge variant="outline" className={`text-[10px] ${statusBadge(s)}`}>
+                {statusLabel[s] || s}
+              </Badge>
+            )}
           </div>
           <div className="space-y-1 text-xs">
             <div className="flex justify-between">
@@ -54,7 +58,7 @@ export function VehicleCard({ vehicle, onClick }: { vehicle: Vehicle; onClick: (
               <span className="font-medium capitalize">{vehicle.kepemilikan}</span>
             </div>
           </div>
-          {needOilChange(vehicle) && (
+          {needOilChange(vehicle) && !isBooked && (
             <div className="mt-2 text-[10px] text-red-500 font-medium">⚠ Oli perlu diganti</div>
           )}
         </CardContent>

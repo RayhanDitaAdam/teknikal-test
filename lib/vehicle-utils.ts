@@ -1,4 +1,4 @@
-import { Vehicle } from "./types";
+import { Vehicle, Pemesanan } from "./types";
 
 export function computeStatus(v: Vehicle): string {
   if (v.status && ["aman", "service", "danger"].includes(v.status)) return v.status;
@@ -45,3 +45,37 @@ export const statusColor = (s: string) => {
     default: return "";
   }
 };
+
+export function isVehicleBooked(
+  vehicleId: string,
+  tanggalMulai: string,
+  tanggalSelesai: string,
+  pemesanans: Pemesanan[]
+): boolean {
+  const start = new Date(tanggalMulai);
+  const end = new Date(tanggalSelesai);
+  return pemesanans.some((p) => {
+    if (p.vehicle?.id !== vehicleId) return false;
+    if (p.status === "rejected") return false;
+    const pStart = new Date(p.tanggalMulai);
+    const pEnd = new Date(p.tanggalSelesai);
+    return start <= pEnd && end >= pStart;
+  });
+}
+
+export function getVehiclesBookedToday(pemesanans: Pemesanan[]): Set<string> {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const endOfToday = new Date(today);
+  endOfToday.setHours(23, 59, 59, 999);
+  const booked = new Set<string>();
+  for (const p of pemesanans) {
+    if (p.status === "rejected" || !p.vehicle) continue;
+    const pStart = new Date(p.tanggalMulai);
+    const pEnd = new Date(p.tanggalSelesai);
+    if (today <= pEnd && endOfToday >= pStart) {
+      booked.add(p.vehicle.id);
+    }
+  }
+  return booked;
+}
