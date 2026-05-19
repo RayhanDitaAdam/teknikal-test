@@ -22,15 +22,15 @@ export function EditVehicleDialog({
   useEffect(() => {
     if (vehicle) {
       setForm({
-        nama: vehicle.nama,
-        plat: vehicle.plat,
-        tipe: vehicle.tipe,
-        kepemilikan: vehicle.kepemilikan,
-        jumlah: vehicle.jumlah.toString(),
-        kilometer: vehicle.kilometer.toString(),
-        kmPerLiter: vehicle.kmPerLiter.toString(),
-        serviceIntervalKm: vehicle.serviceIntervalKm.toString(),
-        oilChangeIntervalKm: vehicle.oilChangeIntervalKm.toString(),
+        nama: vehicle.nama ?? "",
+        plat: vehicle.plat ?? "",
+        tipe: vehicle.tipe ?? "angkutan_orang",
+        kepemilikan: vehicle.kepemilikan ?? "milik",
+        jumlah: (vehicle.jumlah ?? 1).toString(),
+        kilometer: (vehicle.kilometer ?? 0).toString(),
+        kmPerLiter: (vehicle.kmPerLiter ?? 10).toString(),
+        serviceIntervalKm: (vehicle.serviceIntervalKm ?? 10000).toString(),
+        oilChangeIntervalKm: (vehicle.oilChangeIntervalKm ?? 5000).toString(),
       });
     }
   }, [vehicle]);

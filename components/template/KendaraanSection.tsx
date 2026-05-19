@@ -58,7 +58,7 @@ export function KendaraanSection({ vehicles, pemesanans, onRefresh }: { vehicles
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((v) => (
-          <VehicleCard key={v.id} vehicle={v} bookedCount={bookedToday.get(v.id) || 0} isBooked={isVehicleFullyBooked(v.id, today, tomorrow, pemesanans, v.jumlah)} onClick={() => setDetail(v)} onEdit={() => setEditVehicle(v)} />
+          <VehicleCard key={v.id} vehicle={v} bookedCount={bookedToday.get(v.id) || 0} isBooked={isVehicleFullyBooked(v.id, today, tomorrow, pemesanans, v.jumlah || 1)} onClick={() => setDetail(v)} onEdit={() => setEditVehicle(v)} />
         ))}
       </div>
 

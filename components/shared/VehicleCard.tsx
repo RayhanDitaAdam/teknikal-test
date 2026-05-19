@@ -12,10 +12,11 @@ const icons: Record<string, React.ReactNode> = {
 export function VehicleCard({ vehicle, isBooked, bookedCount = 0, onClick, onEdit }: { vehicle: Vehicle; isBooked?: boolean; bookedCount?: number; onClick: () => void; onEdit?: () => void }) {
   const s = computeStatus(vehicle);
   const sisa = sisaKm(vehicle);
-  const tersedia = vehicle.jumlah - bookedCount;
+  const jumlah = vehicle.jumlah ?? 1;
+  const tersedia = jumlah - bookedCount;
   return (
-    <button onClick={onClick} disabled={isBooked} className="text-left w-full">
-      <Card className={`h-full transition-shadow ${isBooked ? "opacity-50 cursor-not-allowed" : "hover:shadow-md cursor-pointer"}`}>
+    <div onClick={isBooked ? undefined : onClick} className={`text-left w-full ${isBooked ? "cursor-not-allowed" : "cursor-pointer"}`}>
+      <Card className={`h-full transition-shadow ${isBooked ? "opacity-50" : "hover:shadow-md"}`}>
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -28,12 +29,15 @@ export function VehicleCard({ vehicle, isBooked, bookedCount = 0, onClick, onEdi
               </div>
             </div>
             <div className="flex flex-col items-end gap-1">
-              <button
+              <div
                 onClick={(e) => { e.stopPropagation(); onEdit?.(); }}
                 className="flex items-center justify-center size-6 rounded-md hover:bg-muted transition-colors"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); onEdit?.(); } }}
               >
                 <SquarePen className="size-3.5 text-muted-foreground" />
-              </button>
+              </div>
               {isBooked ? (
                 <Badge variant="secondary" className="text-[10px]">Penuh</Badge>
               ) : (
@@ -41,9 +45,9 @@ export function VehicleCard({ vehicle, isBooked, bookedCount = 0, onClick, onEdi
                   {statusLabel[s] || s}
                 </Badge>
               )}
-              {vehicle.jumlah > 1 && (
+              {jumlah > 1 && (
                 <Badge variant="outline" className="text-[10px] text-muted-foreground">
-                  {bookedCount}/{vehicle.jumlah}
+                  {bookedCount}/{jumlah}
                 </Badge>
               )}
             </div>
@@ -73,8 +77,8 @@ export function VehicleCard({ vehicle, isBooked, bookedCount = 0, onClick, onEdi
             </div>
             <div className="flex justify-between border-t border-border pt-1 mt-1">
               <span className="text-muted-foreground">Unit tersedia</span>
-              <span className={`font-medium ${tersedia <= 0 ? "text-red-600" : tersedia <= 1 && vehicle.jumlah > 1 ? "text-yellow-600" : "text-green-600"}`}>
-                {tersedia > 0 ? `${tersedia}/${vehicle.jumlah}` : "Habis"}
+              <span className={`font-medium ${tersedia <= 0 ? "text-red-600" : tersedia <= 1 && jumlah > 1 ? "text-yellow-600" : "text-green-600"}`}>
+                {tersedia > 0 ? `${tersedia}/${jumlah}` : "Habis"}
               </span>
             </div>
           </div>
@@ -83,6 +87,6 @@ export function VehicleCard({ vehicle, isBooked, bookedCount = 0, onClick, onEdi
           )}
         </CardContent>
       </Card>
-    </button>
+    </div>
   );
 }
