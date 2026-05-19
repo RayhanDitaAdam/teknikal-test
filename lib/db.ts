@@ -1,0 +1,15 @@
+import { PrismaClient } from "@prisma/client";
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+export async function createLog(userId: string, aksi: string, detail: string, pemesananId?: string) {
+  return prisma.logAktivitas.create({
+    data: { userId, aksi, detail, pemesananId },
+  });
+}

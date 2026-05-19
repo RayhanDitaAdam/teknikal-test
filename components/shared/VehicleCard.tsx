@@ -1,0 +1,64 @@
+import { Car, Truck, Users } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Vehicle } from "@/lib/types";
+import { computeStatus, sisaKm, needOilChange, statusBadge, statusLabel } from "@/lib/vehicle-utils";
+
+const icons: Record<string, React.ReactNode> = {
+  angkutan_orang: <Users className="size-4" />,
+  angkutan_barang: <Truck className="size-4" />,
+};
+
+export function VehicleCard({ vehicle, onClick }: { vehicle: Vehicle; onClick: () => void }) {
+  const s = computeStatus(vehicle);
+  const sisa = sisaKm(vehicle);
+  return (
+    <button onClick={onClick} className="text-left w-full">
+      <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+        <CardContent className="p-4">
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
+                {icons[vehicle.tipe] || <Car className="size-4" />}
+              </div>
+              <div>
+                <p className="font-medium text-sm">{vehicle.nama}</p>
+                <p className="text-xs text-muted-foreground">{vehicle.plat}</p>
+              </div>
+            </div>
+            <Badge variant="outline" className={`text-[10px] ${statusBadge(s)}`}>
+              {statusLabel[s] || s}
+            </Badge>
+          </div>
+          <div className="space-y-1 text-xs">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">KM</span>
+              <span className="font-medium">{vehicle.kilometer.toLocaleString()} km</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Service tiap</span>
+              <span className="font-medium">{vehicle.serviceIntervalKm.toLocaleString()} km</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Sisa service</span>
+              <span className={`font-medium ${sisa <= 0 ? "text-red-600" : sisa <= 2000 ? "text-yellow-600" : "text-green-600"}`}>
+                {sisa > 0 ? `${sisa.toLocaleString()} km` : "LEWAT"}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Bensin</span>
+              <span className="font-medium">{vehicle.kmPerLiter} km/L</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Kepemilikan</span>
+              <span className="font-medium capitalize">{vehicle.kepemilikan}</span>
+            </div>
+          </div>
+          {needOilChange(vehicle) && (
+            <div className="mt-2 text-[10px] text-red-500 font-medium">⚠ Oli perlu diganti</div>
+          )}
+        </CardContent>
+      </Card>
+    </button>
+  );
+}

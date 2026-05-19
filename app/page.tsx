@@ -1,65 +1,131 @@
-import Image from "next/image";
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { format } from "date-fns";
+import * as XLSX from "xlsx";
+import { User, Pemesanan, Vehicle, LogEntry } from "@/lib/types";
+import { statusConfig } from "@/lib/types";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { LoginDialog } from "@/components/shared/LoginDialog";
+import { DashboardSection } from "@/components/template/DashboardSection";
+import { PemesananFormSection } from "@/components/template/PemesananFormSection";
+import { KendaraanSection } from "@/components/template/KendaraanSection";
+import { ApprovalSection } from "@/components/template/ApprovalSection";
+import { LogSection } from "@/components/template/LogSection";
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [users, setUsers] = useState<User[]>([]);
+  const [pemesanans, setPemesanans] = useState<Pemesanan[]>([]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [loginDialog, setLoginDialog] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/users").then((r) => r.json()).then(setUsers);
+    fetchData();
+  }, []);
+
+  const fetchData = useCallback(() => {
+    setLoading(true);
+    Promise.all([
+      fetch("/api/pemesanan").then((r) => r.json()),
+      fetch("/api/logs").then((r) => r.json()),
+      fetch("/api/vehicles").then((r) => r.json()),
+    ]).then(([pemesananData, logsData, vehiclesData]) => {
+      setPemesanans(pemesananData);
+      setLogs(logsData);
+      setVehicles(vehiclesData);
+    }).finally(() => setLoading(false));
+  }, []);
+
+  const dismissLogin = async (user: User) => {
+    setCurrentUser(user);
+    setLoginDialog(false);
+    try {
+      await fetch("/api/logs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, aksi: "LOGIN", detail: `User ${user.nama} (${user.role}) masuk ke sistem` }),
+      });
+    } catch {}
+  };
+
+  const exportToExcel = async () => {
+    const data = pemesanans.map((p) => ({
+      "Nama Pemesan": p.namaPemesan,
+      Departemen: p.departemen,
+      Driver: p.driver?.nama || "-",
+      Kendaraan: p.vehicle ? `${p.vehicle.nama} (${p.vehicle.plat})` : "-",
+      "Approver 1": p.approver1.nama,
+      "Approver 2": p.approver2.nama,
+      "Tgl Mulai": format(new Date(p.tanggalMulai), "dd/MM/yyyy"),
+      "Tgl Selesai": format(new Date(p.tanggalSelesai), "dd/MM/yyyy"),
+      Tujuan: p.tujuan,
+      "Jarak (km)": p.jarakKm || "-",
+      Penumpang: p.jumlahPenumpang,
+      Status: statusConfig[p.status]?.label || p.status,
+      Dibuat: format(new Date(p.createdAt), "dd/MM/yyyy HH:mm"),
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Pemesanan");
+    XLSX.writeFile(wb, `laporan_pemesanan_${format(new Date(), "yyyyMMdd_HHmm")}.xlsx`);
+    if (currentUser) {
+      fetch("/api/logs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: currentUser.id, aksi: "EXPORT_EXCEL", detail: `Export ${data.length} data pemesanan ke Excel` }),
+      }).catch(() => {});
+    }
+  };
+
+  const adminUsers = users.filter((u) => u.role === "admin");
+  const driverUsers = users.filter((u) => u.role === "driver");
+  const approverUsers = users.filter((u) => u.role === "approver");
+  const canApprove1 = currentUser?.role === "approver" || currentUser?.role === "admin";
+  const canApprove2 = currentUser?.role === "approver" || currentUser?.role === "admin";
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+      {loginDialog && <LoginDialog users={users} onSelect={dismissLogin} />}
+
+      <AppLayout currentUser={currentUser} activeTab={activeTab} onTabChange={setActiveTab} onLoginOpen={() => setLoginDialog(true)}>
+        {activeTab === "dashboard" && (
+          <DashboardSection pemesanans={pemesanans} vehicles={vehicles} exportToExcel={exportToExcel} />
+        )}
+
+        {activeTab === "pemesanan" && (
+          <PemesananFormSection
+            adminUsers={adminUsers}
+            driverUsers={driverUsers}
+            approverUsers={approverUsers}
+            vehicles={vehicles}
+            currentUser={currentUser}
+            onSuccess={fetchData}
+          />
+        )}
+
+        {activeTab === "kendaraan" && (
+          <KendaraanSection vehicles={vehicles} onRefresh={fetchData} />
+        )}
+
+        {activeTab === "approval" && (
+          <ApprovalSection
+            pemesanans={pemesanans}
+            currentUser={currentUser}
+            canApprove1={canApprove1}
+            canApprove2={canApprove2}
+            onRefresh={fetchData}
+          />
+        )}
+
+        {activeTab === "logs" && (
+          <LogSection logs={logs} loading={loading} />
+        )}
+      </AppLayout>
+    </>
   );
 }
