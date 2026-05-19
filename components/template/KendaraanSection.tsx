@@ -6,6 +6,7 @@ import { Vehicle, Pemesanan } from "@/lib/types";
 import { computeStatus, isVehicleFullyBooked, getBookedCountsByDate } from "@/lib/vehicle-utils";
 import { VehicleCard } from "@/components/shared/VehicleCard";
 import { TambahVehicleDialog } from "@/components/shared/TambahVehicleDialog";
+import { EditVehicleDialog } from "@/components/shared/EditVehicleDialog";
 import { VehicleDetailDialog } from "@/components/shared/VehicleDetailDialog";
 import { ServiceModal } from "@/components/shared/ServiceModal";
 
@@ -14,6 +15,7 @@ export function KendaraanSection({ vehicles, pemesanans, onRefresh }: { vehicles
   const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
   const bookedToday = getBookedCountsByDate(pemesanans, today, tomorrow);
   const [detail, setDetail] = useState<Vehicle | null>(null);
+  const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null);
   const [tambahOpen, setTambahOpen] = useState(false);
   const [vehicleSearch, setVehicleSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -56,11 +58,13 @@ export function KendaraanSection({ vehicles, pemesanans, onRefresh }: { vehicles
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((v) => (
-          <VehicleCard key={v.id} vehicle={v} bookedCount={bookedToday.get(v.id) || 0} isBooked={isVehicleFullyBooked(v.id, today, tomorrow, pemesanans, v.jumlah)} onClick={() => setDetail(v)} />
+          <VehicleCard key={v.id} vehicle={v} bookedCount={bookedToday.get(v.id) || 0} isBooked={isVehicleFullyBooked(v.id, today, tomorrow, pemesanans, v.jumlah)} onClick={() => setDetail(v)} onEdit={() => setEditVehicle(v)} />
         ))}
       </div>
 
       <TambahVehicleDialog open={tambahOpen} onOpenChange={setTambahOpen} onSuccess={onRefresh} />
+
+      <EditVehicleDialog vehicle={editVehicle} open={!!editVehicle} onOpenChange={(o) => { if (!o) setEditVehicle(null); }} onSuccess={onRefresh} />
 
       <VehicleDetailDialog vehicle={detail} open={!!detail} onOpenChange={(o) => { if (!o) setDetail(null); }} onServiceAction={handleServiceAction} />
 

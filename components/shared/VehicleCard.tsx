@@ -1,4 +1,4 @@
-import { Car, Truck, Users } from "lucide-react";
+import { Car, Truck, Users, SquarePen } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Vehicle } from "@/lib/types";
@@ -9,7 +9,7 @@ const icons: Record<string, React.ReactNode> = {
   angkutan_barang: <Truck className="size-4" />,
 };
 
-export function VehicleCard({ vehicle, isBooked, bookedCount = 0, onClick }: { vehicle: Vehicle; isBooked?: boolean; bookedCount?: number; onClick: () => void }) {
+export function VehicleCard({ vehicle, isBooked, bookedCount = 0, onClick, onEdit }: { vehicle: Vehicle; isBooked?: boolean; bookedCount?: number; onClick: () => void; onEdit?: () => void }) {
   const s = computeStatus(vehicle);
   const sisa = sisaKm(vehicle);
   const tersedia = vehicle.jumlah - bookedCount;
@@ -28,6 +28,12 @@ export function VehicleCard({ vehicle, isBooked, bookedCount = 0, onClick }: { v
               </div>
             </div>
             <div className="flex flex-col items-end gap-1">
+              <button
+                onClick={(e) => { e.stopPropagation(); onEdit?.(); }}
+                className="flex items-center justify-center size-6 rounded-md hover:bg-muted transition-colors"
+              >
+                <SquarePen className="size-3.5 text-muted-foreground" />
+              </button>
               {isBooked ? (
                 <Badge variant="secondary" className="text-[10px]">Penuh</Badge>
               ) : (
